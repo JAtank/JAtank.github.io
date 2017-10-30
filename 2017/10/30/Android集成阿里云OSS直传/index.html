@@ -12,8 +12,7 @@
 <ol>
 <li>集成oss：<br><img src="https://i.imgur.com/R9lbwmF.png" alt=""></li>
 <li><p>然后根据文档进行方法封装，以下是我封装的方法:<br><pre><code><br> import android.content.Context;<br> import android.support.annotation.NonNull;<br> import android.util.Log;<br> import com.alibaba.sdk.android.oss.ClientConfiguration;<br> import com.alibaba.sdk.android.oss.OSS;<br> import com.alibaba.sdk.android.oss.OSSClient;<br> import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback;<br> import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;<br> import com.alibaba.sdk.android.oss.common.auth.OSSFederationCredentialProvider;<br> import com.alibaba.sdk.android.oss.common.auth.OSSFederationToken;<br> import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;<br> import com.alibaba.sdk.android.oss.model.PutObjectRequest;<br> import com.alibaba.sdk.android.oss.model.PutObjectResult;<br> import com.youhongedu.sx2.tea.v3.bean.UploadBean;<br> import java.io.File;<br> //阿里云上传工具类<br> public class OssUploadUtil {</code></pre></p>
-<pre><code>//升级javaBean
-private static UploadBean mUploadBean;
+<pre><code>private static UploadBean mUploadBean;//升级javaBean
 private static OssUploadUtil ossUploadUtil;
 private static Context context;
 
@@ -65,7 +64,8 @@ public class STSGetter extends OSSFederationCredentialProvider {
     }
     public OSSFederationToken getFederationToken() {
         Log.e(&quot;Accesskeyid&quot;,mUploadBean.getAccesskeyid()+&quot;&quot;);
-        return new OSSFederationToken(mUploadBean.getAccesskeyid(), mUploadBean.getAccesskeysecret(), mUploadBean.getSecuritytoken(), mUploadBean.getExpiration());
+        return new OSSFederationToken(mUploadBean.getAccesskeyid(), mUploadBean.getAccesskeysecret(),
+         mUploadBean.getSecuritytoken(), mUploadBean.getExpiration());
     }
 }
 </code></pre><p> }<br><br>3.安卓中调取照相机，在这里我们直接指定存储位置和名称<br><pre><code></code></pre></p>
@@ -87,10 +87,10 @@ newOpts.inSampleSize = 1;
 newOpts.inPreferredConfig = Bitmap.Config.RGB_565;
 return BitmapFactory.decodeFile(imgPath, newOpts);
 </code></pre><p> }<br><br>5.图片压缩处理<br><pre><code><br>//  图片压缩<br> private void compressPhoto(){</code></pre></p>
-<pre><code>Bitmap photo = getBitmap(Environment.getExternalStorageDirectory()+&quot;/sx_tea.jpg&quot;);
+<pre><code>Bitmap photo = getBitmap(Environment.getExternalStorageDirectory()+&quot;/demo.jpg&quot;);
 FileOutputStream fos =null;
 try {
-    fos = new FileOutputStream(Environment.getExternalStorageDirectory()+&quot;/sx_tea.webp&quot;);
+    fos = new FileOutputStream(Environment.getExternalStorageDirectory()+&quot;/demo.webp&quot;);
     photo.compress(Bitmap.CompressFormat.WEBP,30,fos); //图片压缩
 } catch (FileNotFoundException e) {
     e.printStackTrace();
@@ -111,8 +111,8 @@ try {
             OssUploadUtil ossUploadUtil = OssUploadUtil.getOssUploadUtil(WelcomeActivity.this,mUploadBean);
             OSS oss = ossUploadUtil.initOSS();
             ossUploadUtil.asyncPutImage(mUploadBean.getUpload_dir()+mUploadBean.getPhoto_name(),
-            Environment.getExternalStorageDirectory()+&quot;/sx_tea.webp&quot;,oss,
-            new OSSCompletedCallback&lt;PutObjectRequest, PutObjectResult&gt;() {
+                                        Environment.getExternalStorageDirectory()+&quot;/demo.webp&quot;,oss,
+                                        new OSSCompletedCallback&lt;PutObjectRequest, PutObjectResult&gt;() {
                 @Override
                 public void onSuccess(PutObjectRequest request, PutObjectResult result) {
                     //这里是url的拼接（即图片在阿里云上的访问地址）
@@ -126,7 +126,8 @@ try {
                     Log.e(&quot;url&quot;,url);
                 }
                 @Override
-                public void onFailure(PutObjectRequest request, ClientException clientException, ServiceException serviceException) {
+                public void onFailure(PutObjectRequest request, ClientException clientException,
+                                      ServiceException serviceException) {
                     mHandler.sendEmptyMessage(MSG_UNREGECT_ERROR);
                     mUploadBean = null;
                     Log.e(&quot;error&quot;,&quot;失败1:&quot;+clientException);
