@@ -11,88 +11,133 @@
 <p>具体的实现代码：</p>
 <ol>
 <li>集成oss：<br><img src="https://i.imgur.com/R9lbwmF.png" alt=""></li>
-<li><p>然后根据文档进行方法封装，以下是我封装的方法:<br> <pre><code><br> import android.content.Context;<br> import android.support.annotation.NonNull;<br> import android.util.Log;<br> import com.alibaba.sdk.android.oss.ClientConfiguration;<br> import com.alibaba.sdk.android.oss.OSS;<br> import com.alibaba.sdk.android.oss.OSSClient;<br> import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback;<br> import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;<br> import com.alibaba.sdk.android.oss.common.auth.OSSFederationCredentialProvider;<br> import com.alibaba.sdk.android.oss.common.auth.OSSFederationToken;<br> import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;<br> import com.alibaba.sdk.android.oss.model.PutObjectRequest;<br> import com.alibaba.sdk.android.oss.model.PutObjectResult;<br> import com.youhongedu.sx2.tea.v3.bean.UploadBean;<br> import java.io.File;<br> /**</code></pre></p>
-<ul>
-<li>阿里云上传工具类</li>
-<li><p>@Description: Created by Administrator on 2017/10/18.<br>*/</p>
-<p>public class OssUploadUtil {<br> //升级javaBean<br> private static UploadBean mUploadBean;<br> private static OssUploadUtil ossUploadUtil;<br> private static Context context;</p>
-<p> private OssUploadUtil(Context context, UploadBean uploadBean){</p>
-<pre><code>this.context = context;
-this.mUploadBean = uploadBean;
-</code></pre><p> }<br> public static OssUploadUtil getOssUploadUtil(Context context,UploadBean uploadBean){</p>
-<pre><code>if(ossUploadUtil==null){
-    ossUploadUtil = new OssUploadUtil(context,uploadBean);
+<li><p>然后根据文档进行方法封装，以下是我封装的方法:<br><pre><code><br> import android.content.Context;<br> import android.support.annotation.NonNull;<br> import android.util.Log;<br> import com.alibaba.sdk.android.oss.ClientConfiguration;<br> import com.alibaba.sdk.android.oss.OSS;<br> import com.alibaba.sdk.android.oss.OSSClient;<br> import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback;<br> import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;<br> import com.alibaba.sdk.android.oss.common.auth.OSSFederationCredentialProvider;<br> import com.alibaba.sdk.android.oss.common.auth.OSSFederationToken;<br> import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;<br> import com.alibaba.sdk.android.oss.model.PutObjectRequest;<br> import com.alibaba.sdk.android.oss.model.PutObjectResult;<br> import com.youhongedu.sx2.tea.v3.bean.UploadBean;<br> import java.io.File;<br> //阿里云上传工具类<br> public class OssUploadUtil {</code></pre></p>
+<pre><code>//升级javaBean
+private static UploadBean mUploadBean;
+private static OssUploadUtil ossUploadUtil;
+private static Context context;
+
+private OssUploadUtil(Context context, UploadBean uploadBean){
+    this.context = context;
+    this.mUploadBean = uploadBean;
 }
-return ossUploadUtil;
-</code></pre><p> }<br> /**</p>
-<ul>
-<li>初始化oss服务</li>
-<li>@return<br><em>/<br>public OSS initOSS() {<br> //使用自己的获取STSToken的类<br> OSSCredentialProvider credentialProvider = new STSGetter();<br> ClientConfiguration conf = new ClientConfiguration();<br> conf.setConnectionTimeout(15 </em> 1000); // 连接超时，默认15秒<br> conf.setSocketTimeout(15 <em> 1000); // socket超时，默认15秒<br> conf.setMaxConcurrentRequest(5); // 最大并发请求书，默认5个<br> conf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次<br> Log.e(“endpoint”,mUploadBean.getEndpoint());<br> OSS oss = new OSSClient(context, mUploadBean.getEndpoint(), credentialProvider, conf);<br> return oss;<br>}<br>/*</em></li>
-<li>上传</li>
-<li>@param object 文件名</li>
-<li>@param localFile 文件路径</li>
-<li><p>@param userCallback 用户回调<br>*/<br>public void asyncPutImage(String object, String localFile, OSS oss,</p>
-<pre><code>@NonNull final OSSCompletedCallback&lt;PutObjectRequest, PutObjectResult&gt; userCallback) {
-</code></pre><p> if (object.equals(“”)) {</p>
-<pre><code>Log.w(&quot;AsyncPutImage&quot;, &quot;ObjectNull&quot;);
-return;
-</code></pre><p> }<br> File file = new File(localFile);<br> if (!file.exists()) {</p>
-<pre><code>Log.w(&quot;AsyncPutImage&quot;, &quot;FileNotExist&quot;);
-Log.w(&quot;LocalFile&quot;, localFile);
-return;
-</code></pre><p> }<br> Log.e(“localFile”,localFile+”————-“);<br> // 构造上传请求<br> Log.e(“bucket”,mUploadBean.getBucket());<br> PutObjectRequest put = new PutObjectRequest(mUploadBean.getBucket(), object, localFile);<br> OSSAsyncTask task = oss.asyncPutObject(put, userCallback);<br>}</p>
-<p>/**</p>
-</li>
-<li>内部类：获取sts服务（同时携带临时token）<br>*/<br>public class STSGetter extends OSSFederationCredentialProvider {<br> public STSGetter() {<br> }<br> public OSSFederationToken getFederationToken() {<pre><code>Log.e(&quot;Accesskeyid&quot;,mUploadBean.getAccesskeyid()+&quot;&quot;);
-return new OSSFederationToken(mUploadBean.getAccesskeyid(), mUploadBean.getAccesskeysecret(), mUploadBean.getSecuritytoken(), mUploadBean.getExpiration());
-</code></pre> }<br>}<br>}<br><br>3.安卓中调取照相机，在这里我们直接指定存储位置和名称<br><pre><code><br>/**</code></pre></li>
-<li>todo 拍照<br><em>/<br>@JavascriptInterface<br>public void take(){<br>Log.e(“take”,”点击成功”);<br>Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//拍照<br>Uri imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),”/demo.jpg”));//直接指定存储位置和名称<br>cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);<br>startActivityForResult(cameraIntent,REQUEST_UPLOAD_FILE_CODE);<br>}<br><br>4.获取bitmap图片，方便进行压缩<br><pre><code><br>/*</code></pre></em></li>
-</ul>
-</li>
-<li>获取bitmap格式</li>
-<li>@param imgPath</li>
-<li>@return<br><em>/<br>public Bitmap getBitmap(String imgPath) {<br> BitmapFactory.Options newOpts = new BitmapFactory.Options();<br> newOpts.inJustDecodeBounds = false;<br> newOpts.inPurgeable = true;<br> newOpts.inInputShareable = true;<br> newOpts.inSampleSize = 1;<br> newOpts.inPreferredConfig = Bitmap.Config.RGB_565;<br> return BitmapFactory.decodeFile(imgPath, newOpts);<br>}<br><br>5.图片压缩处理<br><pre><code><br>/*</code></pre></em></li>
-<li>图片压缩<br>*/<br>private void compressPhoto(){<br> Bitmap photo = getBitmap(Environment.getExternalStorageDirectory()+”/sx_tea.jpg”);<br> FileOutputStream fos =null;<br> try {<pre><code>fos = new FileOutputStream(Environment.getExternalStorageDirectory()+&quot;/sx_tea.webp&quot;);
-photo.compress(Bitmap.CompressFormat.WEBP,30,fos); //图片压缩
-</code></pre> } catch (FileNotFoundException e) {<pre><code>e.printStackTrace();
-</code></pre> }finally{<pre><code>try {
-    fos.flush();
-    fos.close();
-} catch (IOException e) {
-    e.printStackTrace();
-}
-</code></pre> }<br>}<br><br>6.以上就是上传前的准备工作，由于此前封装好的工具类，在真正的上传过程中代码其实很简单<br><pre><code><br>// 在OnActivityResult中处理拍照上传<br>protected void onActivityResult(int requestCode, int resultCode, Intent data) {<br> if (requestCode == REQUEST_UPLOAD_FILE_CODE &amp;&amp; resultCode == RESULT_OK) {<pre><code>new Thread(new Runnable() {  //开启子线程防止照相后出现闪出桌面现象
-    @Override
-    public void run() {
-        compressPhoto();
-        OssUploadUtil ossUploadUtil = OssUploadUtil.getOssUploadUtil(WelcomeActivity.this,mUploadBean);
-        OSS oss = ossUploadUtil.initOSS();
-        ossUploadUtil.asyncPutImage(mUploadBean.getUpload_dir()+mUploadBean.getPhoto_name(),
-        Environment.getExternalStorageDirectory()+&quot;/sx_tea.webp&quot;,oss,new OSSCompletedCallback&lt;PutObjectRequest, PutObjectResult&gt;() {
-            @Override
-            public void onSuccess(PutObjectRequest request, PutObjectResult result) {
-                //这里是url的拼接（即图片在阿里云上的访问地址）
-                String url = &quot;http://&quot;+mUploadBean.getBucket()+&quot;.&quot;+mUploadBean.getEndpoint()+&quot;/&quot;+mUploadBean.getUpload_dir()+mUploadBean.getPhoto_name();
-                uploadUrl=url;
-                mUploadBean = null;
-                 //这里可进行上传后的操作
-                Log.e(&quot;success&quot;,&quot;成功+&quot;+JSON.toJSONString(request));
-                Log.e(&quot;success&quot;,&quot;成功-&quot;+result);
-                Log.e(&quot;url&quot;,url);
-            }
-            @Override
-            public void onFailure(PutObjectRequest request, ClientException clientException, ServiceException serviceException) {
-                mHandler.sendEmptyMessage(MSG_UNREGECT_ERROR);
-                mUploadBean = null;
-                Log.e(&quot;error&quot;,&quot;失败1:&quot;+clientException);
-                Log.e(&quot;error&quot;,&quot;失败2:&quot;+serviceException);
-                Log.e(&quot;error&quot;,&quot;失败0:&quot;+JSON.toJSONString(request));
-            }
-        });
+public static OssUploadUtil getOssUploadUtil(Context context,UploadBean uploadBean){
+    if(ossUploadUtil==null){
+        ossUploadUtil = new OssUploadUtil(context,uploadBean);
     }
-}).start();
-</code></pre> }<br>}<br></code></pre><br>这样整个上传工作都做完了，多说一句，在上传后返回的参数中并不包含图片在外网的访问地址，所以，需要手动拼接提交业务服务器。但是在网上我也看到有其他的获取url的方式，但我可能由于一些操作或者其他问题没有使用成功（并不代表别人的不能使用），所以大家可以自行研究。</li>
-</ul>
+    return ossUploadUtil;
+}
+// 初始化oss服务
+public OSS initOSS() {
+    //使用自己的获取STSToken的类
+    OSSCredentialProvider credentialProvider = new STSGetter();
+    ClientConfiguration conf = new ClientConfiguration();
+    conf.setConnectionTimeout(15 * 1000); // 连接超时，默认15秒
+    conf.setSocketTimeout(15 * 1000); // socket超时，默认15秒
+    conf.setMaxConcurrentRequest(5); // 最大并发请求书，默认5个
+    conf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次
+    Log.e(&quot;endpoint&quot;,mUploadBean.getEndpoint());
+    OSS oss = new OSSClient(context, mUploadBean.getEndpoint(), credentialProvider, conf);
+    return oss;
+}
+//上传
+public void asyncPutImage(String object, String localFile, OSS oss,
+                          @NonNull final OSSCompletedCallback&lt;PutObjectRequest, PutObjectResult&gt; userCallback) {
+    if (object.equals(&quot;&quot;)) {
+        Log.w(&quot;AsyncPutImage&quot;, &quot;ObjectNull&quot;);
+        return;
+    }
+    File file = new File(localFile);
+    if (!file.exists()) {
+        Log.w(&quot;AsyncPutImage&quot;, &quot;FileNotExist&quot;);
+        Log.w(&quot;LocalFile&quot;, localFile);
+        return;
+    }
+    Log.e(&quot;localFile&quot;,localFile+&quot;-------------&quot;);
+    // 构造上传请求
+    Log.e(&quot;bucket&quot;,mUploadBean.getBucket());
+    PutObjectRequest put = new PutObjectRequest(mUploadBean.getBucket(), object, localFile);
+    OSSAsyncTask task = oss.asyncPutObject(put, userCallback);
+}
+//内部类：获取sts服务（同时携带临时token）
+public class STSGetter extends OSSFederationCredentialProvider {
+    public STSGetter() {
+    }
+    public OSSFederationToken getFederationToken() {
+        Log.e(&quot;Accesskeyid&quot;,mUploadBean.getAccesskeyid()+&quot;&quot;);
+        return new OSSFederationToken(mUploadBean.getAccesskeyid(), mUploadBean.getAccesskeysecret(), mUploadBean.getSecuritytoken(), mUploadBean.getExpiration());
+    }
+}
+</code></pre><p> }<br><br>3.安卓中调取照相机，在这里我们直接指定存储位置和名称<br><pre><code></code></pre></p>
+<pre><code>//拍照
+ @JavascriptInterface
+ public void take(){
+     Log.e(&quot;take&quot;,&quot;点击成功&quot;);
+     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//拍照
+     Uri imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),&quot;/demo.jpg&quot;));//直接指定存储位置和名称
+     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+     startActivityForResult(cameraIntent,REQUEST_UPLOAD_FILE_CODE);
+ }
+</code></pre><p><br>4.获取bitmap图片，方便进行压缩<br><pre><code><br>//获取bitmap格式<br> public Bitmap getBitmap(String imgPath) {</code></pre></p>
+<pre><code>BitmapFactory.Options newOpts = new BitmapFactory.Options();
+newOpts.inJustDecodeBounds = false;
+newOpts.inPurgeable = true;
+newOpts.inInputShareable = true;
+newOpts.inSampleSize = 1;
+newOpts.inPreferredConfig = Bitmap.Config.RGB_565;
+return BitmapFactory.decodeFile(imgPath, newOpts);
+</code></pre><p> }<br><br>5.图片压缩处理<br><pre><code><br>//  图片压缩<br> private void compressPhoto(){</code></pre></p>
+<pre><code>Bitmap photo = getBitmap(Environment.getExternalStorageDirectory()+&quot;/sx_tea.jpg&quot;);
+FileOutputStream fos =null;
+try {
+    fos = new FileOutputStream(Environment.getExternalStorageDirectory()+&quot;/sx_tea.webp&quot;);
+    photo.compress(Bitmap.CompressFormat.WEBP,30,fos); //图片压缩
+} catch (FileNotFoundException e) {
+    e.printStackTrace();
+}finally{
+    try {
+        fos.flush();
+        fos.close();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+</code></pre><p> }<br><br>6.以上就是上传前的准备工作，由于此前封装好的工具类，在真正的上传过程中代码其实很简单<br><pre><code><br>// 在OnActivityResult中处理拍照上传<br> protected void onActivityResult(int requestCode, int resultCode, Intent data) {</code></pre></p>
+<pre><code>if (requestCode == REQUEST_UPLOAD_FILE_CODE &amp;&amp; resultCode == RESULT_OK) {
+    new Thread(new Runnable() {  //开启子线程防止照相后出现闪出桌面现象
+        @Override
+        public void run() {
+            compressPhoto();
+            OssUploadUtil ossUploadUtil = OssUploadUtil.getOssUploadUtil(WelcomeActivity.this,mUploadBean);
+            OSS oss = ossUploadUtil.initOSS();
+            ossUploadUtil.asyncPutImage(mUploadBean.getUpload_dir()+mUploadBean.getPhoto_name(),
+            Environment.getExternalStorageDirectory()+&quot;/sx_tea.webp&quot;,oss,
+            new OSSCompletedCallback&lt;PutObjectRequest, PutObjectResult&gt;() {
+                @Override
+                public void onSuccess(PutObjectRequest request, PutObjectResult result) {
+                    //这里是url的拼接（即图片在阿里云上的访问地址）
+                    String url = &quot;http://&quot;+mUploadBean.getBucket()+&quot;.&quot;+mUploadBean.getEndpoint()+
+                    &quot;/&quot;+mUploadBean.getUpload_dir()+mUploadBean.getPhoto_name();
+                    uploadUrl=url;
+                    mUploadBean = null;
+                     //这里可进行上传后的操作
+                    Log.e(&quot;success&quot;,&quot;成功+&quot;+JSON.toJSONString(request));
+                    Log.e(&quot;success&quot;,&quot;成功-&quot;+result);
+                    Log.e(&quot;url&quot;,url);
+                }
+                @Override
+                public void onFailure(PutObjectRequest request, ClientException clientException, ServiceException serviceException) {
+                    mHandler.sendEmptyMessage(MSG_UNREGECT_ERROR);
+                    mUploadBean = null;
+                    Log.e(&quot;error&quot;,&quot;失败1:&quot;+clientException);
+                    Log.e(&quot;error&quot;,&quot;失败2:&quot;+serviceException);
+                    Log.e(&quot;error&quot;,&quot;失败0:&quot;+JSON.toJSONString(request));
+                }
+            });
+        }
+    }).start();
+}
+</code></pre><p> }<br><br>这样整个上传工作都做完了，多说一句，在上传后返回的参数中并不包含图片在外网的访问地址，所以，需要手动拼接提交业务服务器。但是在网上我也看到有其他的获取url的方式，但我可能由于一些操作或者其他问题没有使用成功（并不代表别人的不能使用），所以大家可以自行研究。</p>
 </li>
 </ol>
 </div><div class="article-meta" style="max-width:800px"></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2017/09/06/真正的Hello-World/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2017 jatank.github.io<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
