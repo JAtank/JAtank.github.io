@@ -68,17 +68,13 @@ public class STSGetter extends OSSFederationCredentialProvider {
          mUploadBean.getSecuritytoken(), mUploadBean.getExpiration());
     }
 }
-</code></pre><p> }<br>3.安卓中调取照相机，在这里我们直接指定存储位置和名称<br><pre><code></code></pre></p>
-<pre><code>//拍照
- @JavascriptInterface
- public void take(){
-     Log.e(&quot;take&quot;,&quot;点击成功&quot;);
-     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//拍照
-     Uri imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),&quot;/demo.jpg&quot;));//直接指定存储位置和名称
-     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-     startActivityForResult(cameraIntent,REQUEST_UPLOAD_FILE_CODE);
- }
-</code></pre><p>4.获取bitmap图片，方便进行压缩<br><pre><code><br>//获取bitmap格式<br> public Bitmap getBitmap(String imgPath) {</code></pre></p>
+</code></pre><p> }<br>3.安卓中调取照相机，在这里我们直接指定存储位置和名称<br><pre><code><br> //拍照<br>   @JavascriptInterface<br>   public void take(){</code></pre></p>
+<pre><code>Log.e(&quot;take&quot;,&quot;点击成功&quot;);
+Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//拍照
+Uri imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),&quot;/demo.jpg&quot;));//直接指定存储位置和名称
+cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+startActivityForResult(cameraIntent,REQUEST_UPLOAD_FILE_CODE);
+</code></pre><p>   }<br>4.获取bitmap图片，方便进行压缩<br><pre><code><br>//获取bitmap格式<br> public Bitmap getBitmap(String imgPath) {</code></pre></p>
 <pre><code>BitmapFactory.Options newOpts = new BitmapFactory.Options();
 newOpts.inJustDecodeBounds = false;
 newOpts.inPurgeable = true;
