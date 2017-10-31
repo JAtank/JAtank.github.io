@@ -1,10 +1,18 @@
 <!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>Andrid个推（推送）集成 - jatank.github.io</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a href="https://github.com"><span>Github</span></a></li><li><a href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">Andrid个推（推送）集成</h1><ul class="meta"><li><i class="icon icon-author"></i>JAtank</li><li><i class="icon icon-clock"></i>4 Minutes</li><li><i class="icon icon-calendar"></i>October 31, 2017</li></ul></div></div><div class="article-content" style="max-width:800px"><p>Android集成个推（推送）<br>项目背景是公司的产品中需要用到推送来从服务器端主动推出，然后app接收，从而完成下一步操作。其实这个功能让app进行循环检测也可以完成，但是这样就造成了以下几个问题：</p>
 <ol>
 <li>app和服务器开销过大。</li>
-<li>并不能进行实时监控。<br>因为公司以前的产品都在使用个推，所以我也就使用个推了。<br>个推集成前注意事项：</li>
+<li>并不能进行实时监控。<br>因为公司以前的产品都在使用个推，所以我也就使用个推了。</li>
+</ol>
+<hr>
+<p>个推集成前注意事项：</p>
+<ol>
 <li>根据需求进行操作。在我们的产品中不需要个推的推送界面和其他杂七杂八的推送服务，只是简简单单的主动推出，传递数据。所以我们只需要简单的进行必要的集成和封装就行。</li>
 <li>在集成过程中。注意区分个推版本：2.9.5.0和之前的版本有很大的不一样，在集成过程中要注意区分。</li>
-<li>一定要仔细产看集成文档，必要的时候可以先写个简单的demo。原因就是集成的过程中稍有不注意，就会造成clientId获取不到，进而造成推送获取不到。<br>具体的集成步骤和方法：</li>
+<li>一定要仔细产看集成文档，必要的时候可以先写个简单的demo。原因就是集成的过程中稍有不注意，就会造成clientId获取不到，进而造成推送获取不到。</li>
+</ol>
+<hr>
+<p>具体的集成步骤和方法：</p>
+<ol>
 <li>申请个推账号，创建应用（这些在个推官网按照具体步骤即可）</li>
 <li>添加maven仓库（没有添加会提示找不到依赖）<br> <img src="http://docs.getui.com/mobile/android/img/asmv_maven.png" alt=""></li>
 <li>添加依赖<br> <img src="http://docs.getui.com/mobile/android/img/asmv_dep.png" alt=""></li>
